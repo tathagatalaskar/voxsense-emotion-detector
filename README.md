@@ -7,7 +7,7 @@
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Try%20VoxSense-f97316?style=for-the-badge&logo=streamlit&logoColor=white)](https://voxsense-emotion-detector.streamlit.app)
 [![GitHub](https://img.shields.io/badge/GitHub-tathagatalaskar-181717?style=for-the-badge&logo=github)](https://github.com/tathagatalaskar/voxsense-emotion-detector)
-[![License: MIT](https://img.shields.io/badge/License-MIT-2dd4bf?style=for-the-badge)](LICENSE)
+
 
 ---
 

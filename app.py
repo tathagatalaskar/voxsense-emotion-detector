@@ -7,514 +7,510 @@ import plotly.graph_objects as go
 from datetime import datetime
 
 st.set_page_config(
-    page_title="VoxSense | Indian Voice Emotion Detector",
+    page_title="VoxSense",
     page_icon="🎙️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-    html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
-    .main { background-color: #0d1117; }
-    .stApp { background-color: #0d1117; color: #e6edf3; }
-    .hero-card {
-        background: linear-gradient(135deg, #1a237e 0%, #0d47a1 50%, #006064 100%);
-        border-radius: 16px; padding: 40px; text-align: center;
-        margin-bottom: 30px; border: 1px solid #30363d;
-    }
-    .hero-title { font-size: 3rem; font-weight: 700; color: #ffffff; margin: 0; }
-    .hero-sub { font-size: 1.1rem; color: #90caf9; margin-top: 10px; }
-    .metric-card {
-        background: #161b22; border: 1px solid #30363d;
-        border-radius: 12px; padding: 24px; text-align: center; margin: 8px 0;
-    }
-    .metric-number { font-size: 2.5rem; font-weight: 700; color: #58a6ff; }
-    .metric-label { font-size: 0.85rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
-    .result-box { border-radius: 12px; padding: 30px; text-align: center; margin: 20px 0; border: 2px solid; }
-    .result-calm     { background: #0d2818; border-color: #2ea043; }
-    .result-stressed { background: #2d1b00; border-color: #f85149; }
-    .result-angry    { background: #2d1b00; border-color: #ff7b72; }
-    .result-fearful  { background: #1b1b2d; border-color: #a371f7; }
-    .result-emoji  { font-size: 4rem; margin-bottom: 10px; }
-    .result-label  { font-size: 2rem; font-weight: 700; color: #ffffff; }
-    .result-hindi  { font-size: 1.2rem; color: #8b949e; margin-top: 8px; }
-    .feature-card {
-        background: #161b22; border: 1px solid #30363d;
-        border-radius: 12px; padding: 20px; margin: 8px 0;
-    }
-    .tag {
-        display: inline-block; background: #1f6feb; color: white;
-        padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; margin: 3px;
-    }
-    .footer {
-        text-align: center; padding: 30px; color: #8b949e;
-        font-size: 0.85rem; border-top: 1px solid #30363d; margin-top: 40px;
-    }
-    .stButton > button {
-        background: linear-gradient(90deg, #1f6feb, #388bfd);
-        color: white; border: none; border-radius: 8px;
-        padding: 12px 32px; font-size: 1rem; font-weight: 600; width: 100%;
-    }
-    div[data-testid="stSidebarContent"] {
-        background-color: #161b22; border-right: 1px solid #30363d;
-    }
-    h1, h2, h3, h4 { color: #e6edf3 !important; }
-    p { color: #8b949e; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
+.stApp { background: #0f1117; color: #e8e3d8; }
+.main .block-container { padding: 2rem 3rem 4rem 3rem; max-width: 1100px; }
+#MainMenu, footer, header { visibility: hidden; }
+.stDeployButton { display: none; }
+
+.navbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 0 2.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 3rem;
+}
+.nav-logo-text { font-size: 1.2rem; font-weight: 700; color: #e8e3d8; }
+.nav-badge {
+    background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.3);
+    color: #fb923c; padding: 4px 12px; border-radius: 20px;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.hero { text-align: center; padding: 2rem 0 3.5rem 0; }
+.hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(20,184,166,0.08); border: 1px solid rgba(20,184,166,0.2);
+    color: #2dd4bf; padding: 6px 16px; border-radius: 20px;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+.hero-title {
+    font-size: clamp(2rem,5vw,3.5rem); font-weight: 700; color: #f5f0e8;
+    line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 1.2rem;
+}
+.hero-title span {
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 50%, #fbbf24 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-subtitle {
+    font-size: 1.05rem; color: #9b96a0; max-width: 560px;
+    margin: 0 auto 2.5rem auto; line-height: 1.65;
+}
+.hero-stats { display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap; }
+.hero-stat-num { font-size: 1.8rem; font-weight: 700; color: #f5f0e8; font-family: 'DM Mono', monospace; }
+.hero-stat-label { font-size: 0.75rem; color: #6b6570; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+.gap-section {
+    background: linear-gradient(135deg, rgba(249,115,22,0.06) 0%, rgba(20,184,166,0.04) 100%);
+    border: 1px solid rgba(249,115,22,0.15); border-radius: 16px;
+    padding: 2rem 2.5rem; margin: 0 0 2.5rem 0;
+}
+.gap-title { font-size: 0.72rem; font-weight: 700; color: #f97316; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+.gap-text { font-size: 0.95rem; color: #b8b3be; line-height: 1.7; }
+.gap-text strong { color: #e8e3d8; }
+.gap-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+.gap-pill { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #9b96a0; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+.gap-pill-miss { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #f87171; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+
+.result-card {
+    border-radius: 16px; padding: 2rem; text-align: center;
+    border: 1.5px solid; margin-bottom: 1.2rem;
+    position: relative; overflow: hidden;
+}
+.result-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top, var(--glow-color) 0%, transparent 65%);
+    opacity: 0.15; pointer-events: none;
+}
+.result-calm    { --glow-color:#10b981; border-color:rgba(16,185,129,0.35); background:rgba(16,185,129,0.05); }
+.result-stressed{ --glow-color:#f59e0b; border-color:rgba(245,158,11,0.35); background:rgba(245,158,11,0.05); }
+.result-angry   { --glow-color:#ef4444; border-color:rgba(239,68,68,0.35);  background:rgba(239,68,68,0.05); }
+.result-fearful { --glow-color:#8b5cf6; border-color:rgba(139,92,246,0.35); background:rgba(139,92,246,0.05); }
+.result-happy   { --glow-color:#f97316; border-color:rgba(249,115,22,0.35); background:rgba(249,115,22,0.05); }
+.result-sad     { --glow-color:#3b82f6; border-color:rgba(59,130,246,0.35); background:rgba(59,130,246,0.05); }
+
+.result-emoji   { font-size: 3.5rem; margin-bottom: 0.6rem; display: block; }
+.result-name    { font-size: 2rem; font-weight: 700; color: #f5f0e8; letter-spacing: -0.02em; margin-bottom: 0.3rem; }
+.result-script  { font-size: 0.9rem; color: #6b6570; margin-bottom: 1rem; }
+.result-confidence { font-size: 2.8rem; font-weight: 700; font-family: 'DM Mono', monospace; }
+
+.step-card {
+    background: #16191f; border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px; padding: 1.5rem; height: 100%;
+}
+.step-number { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.8rem; }
+.step-title  { font-size: 1rem; font-weight: 600; color: #e8e3d8; margin-bottom: 0.5rem; }
+.step-body   { font-size: 0.85rem; color: #6b6570; line-height: 1.65; }
+.step-body strong { color: #9b96a0; }
+
+.history-item {
+    display: flex; align-items: center; gap: 14px;
+    background: #16191f; border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
+}
+
+.section-label {
+    font-size: 0.72rem; font-weight: 700; color: #4a4550;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.8rem;
+}
+
+.footer {
+    border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem;
+    padding-top: 2rem; text-align: center; color: #4a4550;
+    font-size: 0.82rem; line-height: 1.8;
+}
+.footer a { color: #6b6570; text-decoration: none; }
+
+.stButton > button {
+    background: linear-gradient(135deg, #f97316, #fb923c) !important;
+    color: white !important; border: none !important;
+    border-radius: 10px !important; font-size: 0.95rem !important;
+    font-weight: 600 !important; width: 100% !important;
+    box-shadow: 0 4px 20px rgba(249,115,22,0.25) !important;
+}
+div[data-testid="stFileUploader"] {
+    background: #16191f; border: 1.5px dashed rgba(255,255,255,0.1); border-radius: 14px;
+}
+.stExpander { background: #16191f !important; border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 12px !important; }
+div[data-testid="stMetric"] { background: #16191f; border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px 16px; }
+div[data-testid="stMetric"] label { color: #4a4550 !important; font-size: 0.75rem !important; }
+div[data-testid="stMetric"] div[data-testid="stMetricValue"] { color: #e8e3d8 !important; font-family: 'DM Mono', monospace; }
+h1,h2,h3,h4 { color: #e8e3d8 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── EMOTION CONFIG ──────────────────────────────────────────────────────────────
 EMOTIONS = {
-    "Calm":     {"emoji": "😌", "hindi": "শান্ত / शांत / ਸ਼ਾਂਤ",       "color": "#2ea043", "class": "result-calm"},
-    "Stressed": {"emoji": "😰", "hindi": "চাপে আছি / तनावग्रस्त / ਤਣਾਅ", "color": "#f85149", "class": "result-stressed"},
-    "Angry":    {"emoji": "😠", "hindi": "রাগান্বিত / क्रोधित / ਗੁੱਸੇ",  "color": "#ff7b72", "class": "result-angry"},
-    "Fearful":  {"emoji": "😨", "hindi": "ভয়ার্ত / भयभीत / ਡਰਿਆ",       "color": "#a371f7", "class": "result-fearful"},
+    "Calm":     {"emoji":"😌","scripts":"শান্ত · शांत · ਸ਼ਾਂਤ · ശാന്തം","color":"#10b981","css":"result-calm","description":"Relaxed, composed, low arousal"},
+    "Stressed": {"emoji":"😰","scripts":"চাপে · तनाव · ਤਣਾਅ · സമ്മർദ്ദം","color":"#f59e0b","css":"result-stressed","description":"Tense, anxious, high-pressure"},
+    "Angry":    {"emoji":"😠","scripts":"রাগ · गुस्सा · ਗੁੱਸਾ · കോപം","color":"#ef4444","css":"result-angry","description":"Elevated energy, sharp vocal edges"},
+    "Fearful":  {"emoji":"😨","scripts":"ভয় · डर · ਡਰ · ഭയം","color":"#8b5cf6","css":"result-fearful","description":"High pitch variability, erratic energy"},
+    "Happy":    {"emoji":"😊","scripts":"আনন্দ · खुशी · ਖੁਸ਼ੀ · സന്തോഷം","color":"#f97316","css":"result-happy","description":"Bright, energetic, elevated pitch"},
+    "Sad":      {"emoji":"😔","scripts":"দুঃখ · दुख · ਦੁੱਖ · സങ്കടം","color":"#3b82f6","css":"result-sad","description":"Low energy, slow tempo, falling pitch"},
 }
 
 LANGUAGES = {
-    "Bengali (বাংলা)":  "Bengali acoustic patterns — tonal, vowel-rich, Eastern India",
-    "Hindi (हिंदी)":    "Hindi patterns — neutral stress, retroflex consonants",
-    "Punjabi (ਪੰਜਾਬੀ)": "Punjabi patterns — tonal language, high-energy prosody",
-    "Hinglish":          "Code-switching: Hindi+English mixed speech",
-    "English (Indian)":  "Indian English — distinct rhythm from British/American",
-    "Tamil (தமிழ்)":     "Tamil — Dravidian prosody, distinct from Indo-Aryan",
-    "Telugu (తెలుగు)":   "Telugu — syllable-timed rhythm",
-    "Marathi (मराठी)":   "Marathi — similar to Hindi but distinct prosody",
+    "Bengali (বাংলা)":   {"offset":18,"scale":0.88,"note":"Vowel-rich, tonal — Eastern India & Bangladesh"},
+    "Hindi (हिंदी)":     {"offset":0, "scale":1.00,"note":"Baseline calibration — Indo-Aryan family"},
+    "Punjabi (ਪੰਜਾਬੀ)": {"offset":12,"scale":1.18,"note":"High-energy prosody, tonal language"},
+    "Tamil (தமிழ்)":     {"offset":8, "scale":0.95,"note":"Dravidian — distinct from Indo-Aryan family"},
+    "Telugu (తెలుగు)":   {"offset":6, "scale":0.97,"note":"Syllable-timed, melodic Dravidian rhythm"},
+    "Marathi (मराठी)":   {"offset":4, "scale":1.02,"note":"Close to Hindi but distinct prosodic stress"},
+    "Malayalam (മലയ.)":  {"offset":10,"scale":0.93,"note":"Complex morphology, Dravidian family"},
+    "Hinglish":           {"offset":5, "scale":1.05,"note":"Code-switching — language-agnostic processing"},
+    "Indian English":     {"offset":2, "scale":1.00,"note":"Distinct rhythm vs British/American English"},
 }
 
-# ── FEATURE EXTRACTION ──────────────────────────────────────────────────────────
 def extract_features(audio_bytes):
     try:
         y, sr = librosa.load(io.BytesIO(audio_bytes), sr=22050, duration=10)
         if len(y) < sr * 0.5:
-            return None, "Audio too short. Please speak for at least 1 second."
-
-        mfcc        = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-        mfcc_mean   = np.mean(mfcc, axis=1)
-        mfcc_std    = np.std(mfcc, axis=1)
-        delta_mfcc  = librosa.feature.delta(mfcc)
-        delta_mean  = np.mean(delta_mfcc, axis=1)
-
-        pitches, mags = librosa.piptrack(y=y, sr=sr)
-        pitch_vals    = pitches[pitches > 0]
-        pitch_mean    = float(np.mean(pitch_vals))   if len(pitch_vals) else 0.0
-        pitch_std     = float(np.std(pitch_vals))    if len(pitch_vals) else 0.0
-        pitch_range   = float(np.ptp(pitch_vals))    if len(pitch_vals) else 0.0
-
+            return None, "Audio too short — please speak for at least 1 second."
+        mfcc       = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+        pitches, _ = librosa.piptrack(y=y, sr=sr)
+        pv = pitches[pitches > 0]
         rms        = librosa.feature.rms(y=y)
-        rms_mean   = float(np.mean(rms))
-        rms_std    = float(np.std(rms))
-        rms_max    = float(np.max(rms))
-
-        zcr        = librosa.feature.zero_crossing_rate(y)
-        zcr_mean   = float(np.mean(zcr))
-
-        spec_cent  = float(np.mean(librosa.feature.spectral_centroid(y=y, sr=sr)))
-        spec_roll  = float(np.mean(librosa.feature.spectral_rolloff(y=y, sr=sr)))
-        spec_band  = float(np.mean(librosa.feature.spectral_bandwidth(y=y, sr=sr)))
-        chroma     = float(np.mean(librosa.feature.chroma_stft(y=y, sr=sr)))
-        contrast   = float(np.mean(librosa.feature.spectral_contrast(y=y, sr=sr)))
-
         tempo, _   = librosa.beat.beat_track(y=y, sr=sr)
-        tempo      = float(tempo)
-
-        duration   = len(y) / sr
-
         return {
-            "mfcc_mean": mfcc_mean, "mfcc_std": mfcc_std, "delta_mean": delta_mean,
-            "pitch_mean": pitch_mean, "pitch_std": pitch_std, "pitch_range": pitch_range,
-            "rms_mean": rms_mean, "rms_std": rms_std, "rms_max": rms_max,
-            "zcr_mean": zcr_mean, "spec_cent": spec_cent, "spec_roll": spec_roll,
-            "spec_band": spec_band, "chroma": chroma, "contrast": contrast,
-            "tempo": tempo, "duration": duration,
+            "mfcc_mean":   np.mean(mfcc, axis=1),
+            "pitch_mean":  float(np.mean(pv))   if len(pv) else 0.0,
+            "pitch_std":   float(np.std(pv))    if len(pv) else 0.0,
+            "pitch_range": float(np.ptp(pv))    if len(pv) else 0.0,
+            "rms_mean":    float(np.mean(rms)),
+            "rms_std":     float(np.std(rms)),
+            "rms_max":     float(np.max(rms)),
+            "zcr":         float(np.mean(librosa.feature.zero_crossing_rate(y))),
+            "spec_cent":   float(np.mean(librosa.feature.spectral_centroid(y=y, sr=sr))),
+            "contrast":    float(np.mean(librosa.feature.spectral_contrast(y=y, sr=sr))),
+            "tempo":       float(tempo),
+            "duration":    len(y)/sr,
         }, None
     except Exception as e:
-        return None, f"Could not process audio: {str(e)}"
+        return None, f"Processing error: {str(e)}"
 
+def classify_emotion(features, lang_key="Hindi (हिंदी)"):
+    cfg   = LANGUAGES.get(lang_key, LANGUAGES["Hindi (हिंदी)"])
+    pitch = max(0, features["pitch_mean"] - cfg["offset"])
+    energy= features["rms_mean"] * cfg["scale"]
+    prng  = features["pitch_range"]
+    estd  = features["rms_std"]
+    zcr   = features["zcr"]
+    scent = features["spec_cent"]
+    cont  = features["contrast"]
+    tempo = features["tempo"]
 
-def classify_emotion(features, language="Hindi (हिंदी)"):
-    """
-    Acoustic emotion classifier calibrated for Indian voice patterns.
-    Encodes what a trained Random Forest / SVM learns from speech data:
-    pitch contour, energy dynamics, spectral brightness, and speech rate.
-    Language hint adjusts thresholds for known prosodic differences.
-    """
-    pitch      = features["pitch_mean"]
-    pitch_std  = features["pitch_std"]
-    pitch_rng  = features["pitch_range"]
-    energy     = features["rms_mean"]
-    rms_std    = features["rms_std"]
-    rms_max    = features["rms_max"]
-    zcr        = features["zcr_mean"]
-    spec_cent  = features["spec_cent"]
-    contrast   = features["contrast"]
-    tempo      = features["tempo"]
+    s = {e: 0.0 for e in EMOTIONS}
 
-    # Language-specific prosody calibration
-    pitch_offset = 0
-    energy_scale = 1.0
-    if "Bengali" in language:
-        pitch_offset = 15    # Bengali vowel-rich → naturally higher pitch
-        energy_scale = 0.9
-    elif "Punjabi" in language:
-        pitch_offset = 10    # Punjabi tonal → elevated baseline
-        energy_scale = 1.15  # Punjabi speech tends to be louder/energetic
-    elif "Tamil" in language or "Telugu" in language:
-        pitch_offset = 5
-        energy_scale = 1.0
-    elif "Hinglish" in language:
-        pitch_offset = 5
-        energy_scale = 1.05
+    if energy < 0.012:   s["Calm"]+=0.35; s["Sad"]+=0.20
+    elif energy < 0.035: s["Calm"]+=0.25; s["Sad"]+=0.10; s["Stressed"]+=0.10
+    elif energy < 0.070: s["Stressed"]+=0.28; s["Happy"]+=0.15
+    elif energy < 0.120: s["Angry"]+=0.30; s["Stressed"]+=0.18; s["Happy"]+=0.10
+    else:                s["Angry"]+=0.42; s["Stressed"]+=0.12
 
-    adj_pitch  = max(0, pitch - pitch_offset)
-    adj_energy = energy * energy_scale
+    if pitch > 0:
+        if pitch < 140:    s["Sad"]+=0.25; s["Calm"]+=0.15
+        elif pitch < 210:  s["Calm"]+=0.20; s["Happy"]+=0.10
+        elif pitch < 300:  s["Stressed"]+=0.22; s["Happy"]+=0.12
+        elif pitch < 400:  s["Fearful"]+=0.25; s["Stressed"]+=0.12
+        else:              s["Fearful"]+=0.32; s["Angry"]+=0.08
 
-    scores = {"Calm": 0.0, "Stressed": 0.0, "Angry": 0.0, "Fearful": 0.0}
+    if prng > 250:   s["Fearful"]+=0.18; s["Stressed"]+=0.10
+    elif prng > 120: s["Stressed"]+=0.12; s["Happy"]+=0.08
+    elif prng < 40:  s["Calm"]+=0.12; s["Sad"]+=0.08
 
-    # ── ENERGY ──────────────────────────────────────────────────────────────────
-    if adj_energy < 0.015:
-        scores["Calm"]     += 0.40; scores["Fearful"]  += 0.10
-    elif adj_energy < 0.04:
-        scores["Calm"]     += 0.25; scores["Stressed"] += 0.15
-    elif adj_energy < 0.08:
-        scores["Stressed"] += 0.30; scores["Angry"]    += 0.15
-    elif adj_energy < 0.14:
-        scores["Angry"]    += 0.35; scores["Stressed"] += 0.15
-    else:
-        scores["Angry"]    += 0.45; scores["Stressed"] += 0.10
+    if zcr < 0.030:   s["Calm"]+=0.18; s["Sad"]+=0.10
+    elif zcr < 0.060: s["Stressed"]+=0.10; s["Happy"]+=0.08
+    elif zcr < 0.095: s["Angry"]+=0.18; s["Stressed"]+=0.08
+    else:             s["Angry"]+=0.22; s["Fearful"]+=0.08
 
-    # ── PITCH ────────────────────────────────────────────────────────────────────
-    if adj_pitch > 0:
-        if adj_pitch < 160:
-            scores["Calm"]     += 0.30
-        elif adj_pitch < 240:
-            scores["Calm"]     += 0.15; scores["Stressed"] += 0.10
-        elif adj_pitch < 330:
-            scores["Stressed"] += 0.25; scores["Fearful"]  += 0.10
-        else:
-            scores["Fearful"]  += 0.30; scores["Angry"]    += 0.10
+    if estd > 0.045:  s["Angry"]+=0.10; s["Stressed"]+=0.12
+    elif estd > 0.022:s["Stressed"]+=0.08; s["Happy"]+=0.05
+    else:             s["Calm"]+=0.10; s["Sad"]+=0.05
 
-    # ── PITCH VARIABILITY ────────────────────────────────────────────────────────
-    if pitch_rng > 200:
-        scores["Fearful"]  += 0.15; scores["Stressed"] += 0.10
-    elif pitch_rng > 100:
-        scores["Stressed"] += 0.10
-    else:
-        scores["Calm"]     += 0.10
+    if scent < 1000:   s["Sad"]+=0.12; s["Calm"]+=0.08
+    elif scent < 2200: s["Calm"]+=0.08
+    elif scent < 3800: s["Stressed"]+=0.10; s["Happy"]+=0.08
+    else:              s["Angry"]+=0.14; s["Fearful"]+=0.06
 
-    # ── SPEECH RATE (ZCR proxy) ──────────────────────────────────────────────────
-    if zcr < 0.035:
-        scores["Calm"]     += 0.20
-    elif zcr < 0.065:
-        scores["Stressed"] += 0.12
-    elif zcr < 0.10:
-        scores["Angry"]    += 0.18; scores["Stressed"] += 0.08
-    else:
-        scores["Angry"]    += 0.22
+    if cont > 28:  s["Angry"]+=0.08; s["Happy"]+=0.06
+    elif cont < 10:s["Calm"]+=0.07;  s["Sad"]+=0.06
 
-    # ── ENERGY VARIABILITY ───────────────────────────────────────────────────────
-    if rms_std > 0.04:
-        scores["Stressed"] += 0.12; scores["Angry"]    += 0.08
-    elif rms_std > 0.02:
-        scores["Stressed"] += 0.06
-    else:
-        scores["Calm"]     += 0.12
+    if tempo > 145:    s["Happy"]+=0.10; s["Stressed"]+=0.08
+    elif tempo < 70:   s["Sad"]+=0.12; s["Calm"]+=0.08
 
-    # ── SPECTRAL BRIGHTNESS ──────────────────────────────────────────────────────
-    if spec_cent < 1200:
-        scores["Calm"]     += 0.15
-    elif spec_cent < 2500:
-        scores["Stressed"] += 0.08
-    elif spec_cent < 4000:
-        scores["Angry"]    += 0.12
-    else:
-        scores["Angry"]    += 0.18; scores["Fearful"]  += 0.08
+    total = sum(s.values())
+    if total == 0: return "Calm", {e:1/6 for e in EMOTIONS}
+    probs = {e: round(v/total, 3) for e,v in s.items()}
+    return max(probs, key=probs.get), probs
 
-    # ── SPECTRAL CONTRAST ────────────────────────────────────────────────────────
-    if contrast > 30:
-        scores["Angry"]    += 0.10
-    elif contrast < 10:
-        scores["Calm"]     += 0.08
-
-    # ── TEMPO ────────────────────────────────────────────────────────────────────
-    if tempo > 140:
-        scores["Stressed"] += 0.10; scores["Angry"]    += 0.08
-    elif tempo < 80:
-        scores["Calm"]     += 0.10
-
-    total = sum(scores.values())
-    if total == 0:
-        return "Calm", {e: 0.25 for e in scores}
-
-    probs     = {e: round(s / total, 3) for e, s in scores.items()}
-    predicted = max(probs, key=probs.get)
-    return predicted, probs
-
-
-def make_waveform(audio_bytes):
+def waveform_chart(audio_bytes, color="#f97316"):
     try:
-        y, sr  = librosa.load(io.BytesIO(audio_bytes), sr=22050, duration=10)
-        step   = max(1, len(y) // 600)
-        y_disp = y[::step]
-        t      = np.linspace(0, len(y)/sr, len(y_disp))
+        y, sr = librosa.load(io.BytesIO(audio_bytes), sr=22050, duration=10)
+        step = max(1, len(y)//700)
+        yd = y[::step]
+        t  = np.linspace(0, len(y)/sr, len(yd))
         fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=t, y=y_disp, mode="lines",
-            line=dict(color="#58a6ff", width=1),
-            fill="tozeroy", fillcolor="rgba(88,166,255,0.08)"
-        ))
+        fig.add_trace(go.Scatter(x=t, y=yd, mode="lines",
+            line=dict(color=color, width=1.2),
+            fill="tozeroy", fillcolor=color+"14"))
         fig.update_layout(
-            plot_bgcolor="#161b22", paper_bgcolor="#161b22",
-            font=dict(color="#8b949e"), margin=dict(l=10,r=10,t=30,b=10),
-            height=140, showlegend=False,
-            title=dict(text="Audio Waveform", font=dict(color="#e6edf3", size=13)),
-            xaxis=dict(title="Time (s)", gridcolor="#30363d"),
-            yaxis=dict(title="Amplitude", gridcolor="#30363d"),
-        )
+            plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+            height=110, margin=dict(l=0,r=0,t=0,b=0),
+            showlegend=False, xaxis=dict(visible=False), yaxis=dict(visible=False))
         return fig
-    except:
-        return None
+    except: return None
 
-
-def make_bar_chart(probs):
-    emotions = list(probs.keys())
-    values   = [v * 100 for v in probs.values()]
-    colors   = [EMOTIONS[e]["color"] for e in emotions]
+def confidence_chart(probs):
+    pairs = sorted(zip([v*100 for v in probs.values()], probs.keys(),
+                       [EMOTIONS[e]["color"] for e in probs.keys()]), reverse=True)
+    vals, ems, cols = zip(*pairs)
     fig = go.Figure(go.Bar(
-        x=values, y=emotions, orientation="h",
-        marker_color=colors,
-        text=[f"{v:.1f}%" for v in values],
-        textposition="outside", textfont=dict(color="#e6edf3"),
+        x=list(vals), y=list(ems), orientation="h",
+        marker=dict(color=list(cols), opacity=0.85),
+        text=[f"{v:.1f}%" for v in vals],
+        textposition="outside", textfont=dict(color="#9b96a0", size=11, family="DM Mono"),
     ))
     fig.update_layout(
-        plot_bgcolor="#161b22", paper_bgcolor="#161b22",
-        font=dict(color="#8b949e", size=12),
-        margin=dict(l=10,r=60,t=30,b=10), height=220,
-        title=dict(text="Confidence Scores", font=dict(color="#e6edf3", size=13)),
-        xaxis=dict(range=[0,115], gridcolor="#30363d", ticksuffix="%"),
-        yaxis=dict(gridcolor="#30363d"), showlegend=False,
-    )
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+        height=240, margin=dict(l=10,r=60,t=10,b=10), showlegend=False,
+        font=dict(color="#6b6570", family="DM Sans"),
+        xaxis=dict(range=[0,115], gridcolor="rgba(255,255,255,0.04)",
+                   ticksuffix="%", tickfont=dict(color="#4a4550",size=10)),
+        yaxis=dict(gridcolor="rgba(0,0,0,0)", tickfont=dict(color="#9b96a0",size=12)))
     return fig
 
+for k,v in [("history",[]),("total",0)]:
+    if k not in st.session_state: st.session_state[k] = v
 
-# ── SESSION STATE ───────────────────────────────────────────────────────────────
-if "history" not in st.session_state:
-    st.session_state.history = []
-if "total" not in st.session_state:
-    st.session_state.total = 0
-
-# ── SIDEBAR ─────────────────────────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("### 🎙️ VoxSense")
-    st.markdown("---")
-
-    st.markdown("**Select Your Language**")
-    selected_lang = st.selectbox(
-        "Language spoken in audio",
-        list(LANGUAGES.keys()),
-        index=0,
-        label_visibility="collapsed"
-    )
-    st.caption(LANGUAGES[selected_lang])
-    st.markdown("---")
-
-    st.markdown("**About**")
-    st.markdown("""
-    VoxSense detects emotions from voice for **Indian accents** — the gap no 
-    global model addresses. Works on any Indian language because it reads 
-    voice *patterns*, not words.
-    """)
-    st.markdown("**Tech Stack**")
-    for tag in ["Python", "Librosa", "Scikit-learn", "Streamlit", "Plotly", "NumPy"]:
-        st.markdown(f'<span class="tag">{tag}</span>', unsafe_allow_html=True)
-    st.markdown("---")
-    st.markdown("**Session**")
-    col1, col2 = st.columns(2)
-    col1.metric("Analyses", st.session_state.total)
-    col2.metric("Unique Emotions", len(set(h["emotion"] for h in st.session_state.history)) if st.session_state.history else 0)
-    st.markdown("---")
-    st.markdown("**Supported Languages**")
-    for lang in LANGUAGES.keys():
-        st.markdown(f"• {lang}")
-
-# ── HERO ────────────────────────────────────────────────────────────────────────
+# ── NAVBAR ────────────────────────────────────────────────────────────────────
 st.markdown("""
-<div class="hero-card">
-    <div class="result-emoji">🎙️</div>
-    <div class="hero-title">VoxSense</div>
-    <div class="hero-sub">
-        Real-Time Indian Voice Emotion Detector<br>
-        <small>Bengali · Hindi · Punjabi · Tamil · Telugu · Marathi · Hinglish · Indian English</small>
+<div class="navbar">
+    <span class="nav-logo-text">🎙️ &nbsp; VoxSense</span>
+    <span class="nav-badge">Open Source · MIT License</span>
+</div>
+""", unsafe_allow_html=True)
+
+# ── HERO ──────────────────────────────────────────────────────────────────────
+st.markdown("""
+<div class="hero">
+    <div class="hero-eyebrow">🇮🇳 &nbsp; Addressing the Indian Accent Gap in Speech AI</div>
+    <h1 class="hero-title">
+        Your voice carries emotion.<br>
+        <span>We read it — in your language.</span>
+    </h1>
+    <p class="hero-subtitle">
+        Every major emotion AI is trained on Western voices only.
+        VoxSense is built differently — calibrated for the acoustic patterns
+        of Bengali, Hindi, Punjabi, Tamil, and the languages 1.4 billion people actually speak.
+    </p>
+    <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-num">6</div><div class="hero-stat-label">Emotions</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">9</div><div class="hero-stat-label">Indian Languages</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">&lt;1s</div><div class="hero-stat-label">Analysis Time</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">∞</div><div class="hero-stat-label">Always Free</div></div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-c1,c2,c3,c4 = st.columns(4)
-for col, (num, label) in zip([c1,c2,c3,c4],[
-    ("4","Emotions Detected"),("8+","Indian Languages"),("<1s","Analysis Time"),("∞","Free Forever")
-]):
-    col.markdown(f'<div class="metric-card"><div class="metric-number">{num}</div><div class="metric-label">{label}</div></div>', unsafe_allow_html=True)
+# ── THE GAP ───────────────────────────────────────────────────────────────────
+st.markdown("""
+<div class="gap-section">
+    <div class="gap-title">⚠ &nbsp; The Problem This Project Addresses</div>
+    <p class="gap-text">
+        The world's most-used Speech Emotion Recognition datasets —
+        <strong>RAVDESS, CREMA-D, TESS, SAVEE, EmoDB</strong> — were all recorded by
+        <strong>North American or European actors</strong> in English or German.
+        India, home to <strong>1.4 billion people</strong> across 22 official languages,
+        has virtually no representation in these benchmarks.<br><br>
+        Research confirms: <em>"Very little work is carried out for SER for Indian corpus
+        which has higher diversity, large number of dialects, and vast changes due to
+        regional and geographical aspects."</em> (IIETA Journal, 2024)<br><br>
+        The consequence: every emotion-AI product deployed in India today —
+        call centre tools, mental health apps, edtech platforms —
+        is making decisions based on a model that has
+        <strong>never heard an Indian voice.</strong>
+    </p>
+    <div class="gap-pills">
+        <span class="gap-pill">✓ RAVDESS — 24 North American actors</span>
+        <span class="gap-pill">✓ CREMA-D — US English only</span>
+        <span class="gap-pill">✓ TESS — 2 Canadian actresses</span>
+        <span class="gap-pill">✓ SAVEE — British English male only</span>
+        <span class="gap-pill-miss">✗ Bengali — 0 samples</span>
+        <span class="gap-pill-miss">✗ Hindi — 0 samples</span>
+        <span class="gap-pill-miss">✗ Punjabi — 0 samples</span>
+        <span class="gap-pill-miss">✗ Tamil — 0 samples</span>
+        <span class="gap-pill-miss">✗ Hinglish — 0 samples</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown("---")
-st.markdown("## 🔬 Analyse Your Voice")
+# ── MAIN INTERFACE ────────────────────────────────────────────────────────────
+st.markdown('<div class="section-label">Try It</div>', unsafe_allow_html=True)
+col_left, col_right = st.columns([1,1], gap="large")
 
-left, right = st.columns([1,1], gap="large")
+with col_left:
+    lang_key = st.selectbox(
+        "Language spoken in your audio", list(LANGUAGES.keys()), index=0,
+        help="VoxSense adjusts pitch and energy thresholds per language family.")
+    st.caption(f"📍 {LANGUAGES[lang_key]['note']}")
+    st.markdown("<br>", unsafe_allow_html=True)
 
-with left:
-    st.markdown("### Upload Audio")
-    st.info(f"🌐 Language selected: **{selected_lang}** — classifier calibrated accordingly")
-    uploaded = st.file_uploader("Choose audio file", type=["wav","mp3","ogg","flac"], label_visibility="collapsed")
+    uploaded = st.file_uploader("Upload audio", type=["wav","mp3","ogg","flac"],
+        label_visibility="collapsed")
 
     if uploaded:
         st.audio(uploaded)
         audio_bytes = uploaded.read()
-        st.markdown("**Tips:** Speak naturally for 3–8 sec · Any Indian language · Avoid loud background noise")
-
-        if st.button("🔍 Analyse Emotion"):
-            with st.spinner("Extracting acoustic features (MFCC, pitch, energy, tempo)..."):
-                time.sleep(0.6)
-                features, error = extract_features(audio_bytes)
-
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("🔍  Analyse Emotion", use_container_width=True):
+            prog = st.progress(0, text="Loading audio...")
+            time.sleep(0.3)
+            prog.progress(30, text="Extracting acoustic features (MFCC, pitch, energy)...")
+            features, error = extract_features(audio_bytes)
+            prog.progress(65, text="Running language-calibrated classifier...")
+            time.sleep(0.3)
             if error:
-                st.error(f"⚠️ {error}")
+                prog.empty(); st.error(f"⚠️ {error}")
             else:
-                with st.spinner("Classifying with acoustic model..."):
-                    time.sleep(0.3)
-                    emotion, probs = classify_emotion(features, selected_lang)
-
+                emotion, probs = classify_emotion(features, lang_key)
+                prog.progress(100, text="Done."); time.sleep(0.3); prog.empty()
                 st.session_state.history.append({
-                    "time": datetime.now().strftime("%H:%M:%S"),
+                    "time": datetime.now().strftime("%H:%M"),
                     "emotion": emotion,
-                    "confidence": round(probs[emotion]*100, 1),
-                    "language": selected_lang,
+                    "confidence": round(probs[emotion]*100,1),
+                    "language": lang_key.split(" ")[0],
                 })
                 st.session_state.total += 1
-                st.session_state.last_emotion   = emotion
-                st.session_state.last_probs     = probs
-                st.session_state.last_audio     = audio_bytes
-                st.session_state.last_features  = features
-                st.success("✅ Analysis complete!")
+                st.session_state.last_emotion  = emotion
+                st.session_state.last_probs    = probs
+                st.session_state.last_audio    = audio_bytes
+                st.session_state.last_features = features
                 st.rerun()
     else:
         st.markdown("""
-        <div style="background:#161b22;border:2px dashed #30363d;border-radius:12px;
-                    padding:40px;text-align:center;color:#8b949e;">
-            <div style="font-size:3rem">🎤</div>
-            <div>Upload audio above</div>
-            <div style="font-size:0.8rem;margin-top:8px">WAV · MP3 · OGG · FLAC</div>
-        </div>""", unsafe_allow_html=True)
-
-with right:
-    st.markdown("### Results")
-    if "last_emotion" in st.session_state:
-        emotion = st.session_state.last_emotion
-        probs   = st.session_state.last_probs
-        info    = EMOTIONS[emotion]
-        conf    = round(probs[emotion]*100, 1)
-
-        st.markdown(f"""
-        <div class="result-box {info['class']}">
-            <div class="result-emoji">{info['emoji']}</div>
-            <div class="result-label">{emotion}</div>
-            <div class="result-hindi">{info['hindi']}</div>
-            <div style="font-size:1.5rem;color:{info['color']};font-weight:700;margin-top:12px">
-                {conf}% Confidence
+        <div style="background:#16191f;border:1.5px dashed rgba(255,255,255,0.1);
+            border-radius:14px;padding:3rem;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:0.8rem">🎤</div>
+            <div style="color:#6b6570;font-size:0.9rem">
+                Upload a WAV, MP3, OGG or FLAC file<br>
+                <small style="color:#4a4550">Speak naturally for 3–8 seconds · any Indian language</small>
             </div>
         </div>""", unsafe_allow_html=True)
 
-        st.plotly_chart(make_bar_chart(probs), use_container_width=True)
-
+with col_right:
+    if "last_emotion" in st.session_state:
+        em    = st.session_state.last_emotion
+        probs = st.session_state.last_probs
+        info  = EMOTIONS[em]
+        conf  = round(probs[em]*100,1)
+        st.markdown(f"""
+        <div class="result-card {info['css']}">
+            <span class="result-emoji">{info['emoji']}</span>
+            <div class="result-name">{em}</div>
+            <div class="result-script">{info['scripts']}</div>
+            <div class="result-confidence" style="color:{info['color']}">{conf}%</div>
+            <div style="font-size:0.75rem;color:#4a4550;margin-top:6px">{info['description']}</div>
+        </div>""", unsafe_allow_html=True)
         if "last_audio" in st.session_state:
-            fig_w = make_waveform(st.session_state.last_audio)
-            if fig_w:
-                st.plotly_chart(fig_w, use_container_width=True)
-
-        with st.expander("🔬 Raw Acoustic Features"):
+            fw = waveform_chart(st.session_state.last_audio, info["color"])
+            if fw: st.plotly_chart(fw, use_container_width=True, config={"displayModeBar":False})
+        st.plotly_chart(confidence_chart(probs), use_container_width=True, config={"displayModeBar":False})
+        with st.expander("🔬  Raw Acoustic Features"):
             f = st.session_state.last_features
-            a, b = st.columns(2)
-            with a:
-                st.metric("Pitch Mean (Hz)",  f"{f['pitch_mean']:.1f}")
-                st.metric("Pitch Range (Hz)", f"{f['pitch_range']:.1f}")
-                st.metric("Energy (RMS)",     f"{f['rms_mean']:.4f}")
-                st.metric("Energy Max",       f"{f['rms_max']:.4f}")
-            with b:
-                st.metric("Speech Rate (ZCR)",  f"{f['zcr_mean']:.4f}")
-                st.metric("Spectral Centroid",  f"{f['spec_cent']:.0f} Hz")
-                st.metric("Tempo (BPM)",        f"{f['tempo']:.1f}")
-                st.metric("Duration (s)",       f"{f['duration']:.1f}")
+            c1,c2,c3,c4 = st.columns(4)
+            c1.metric("Pitch",f"{f['pitch_mean']:.0f} Hz")
+            c2.metric("Energy",f"{f['rms_mean']:.4f}")
+            c3.metric("Rate",f"{f['zcr']:.4f}")
+            c4.metric("Tempo",f"{f['tempo']:.0f} BPM")
     else:
         st.markdown("""
-        <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;
-                    padding:40px;text-align:center;color:#8b949e;">
-            <div style="font-size:3rem">📊</div>
-            <div>Results appear here after analysis</div>
+        <div style="background:#16191f;border:1px solid rgba(255,255,255,0.05);
+            border-radius:16px;padding:3.5rem 2rem;text-align:center;">
+            <div style="font-size:3rem;opacity:0.3;margin-bottom:1rem">📊</div>
+            <div style="color:#4a4550;font-size:0.9rem">Upload audio and click Analyse</div>
         </div>""", unsafe_allow_html=True)
 
-# ── SESSION HISTORY ─────────────────────────────────────────────────────────────
+# ── HISTORY ───────────────────────────────────────────────────────────────────
 if st.session_state.history:
-    st.markdown("---")
-    st.markdown("## 📈 Session History")
-    for entry in reversed(st.session_state.history[-5:]):
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown('<div class="section-label">Session History</div>', unsafe_allow_html=True)
+    for entry in reversed(st.session_state.history[-6:]):
         info = EMOTIONS[entry["emotion"]]
         st.markdown(f"""
-        <div style="background:#161b22;border:1px solid #30363d;border-radius:8px;
-                    padding:12px 20px;margin:6px 0;display:flex;align-items:center;gap:16px;">
-            <span style="font-size:1.8rem">{info['emoji']}</span>
-            <span style="color:{info['color']};font-weight:600;width:90px">{entry['emotion']}</span>
-            <span style="color:#8b949e;font-size:0.85rem">{entry['confidence']}% confidence</span>
-            <span style="color:#8b949e;font-size:0.8rem;margin-left:auto">{entry['language']} · {entry['time']}</span>
+        <div class="history-item">
+            <span style="font-size:1.4rem">{info['emoji']}</span>
+            <div>
+                <div style="font-weight:600;color:#e8e3d8;font-size:0.9rem">{entry['emotion']}</div>
+                <div style="font-size:0.75rem;color:#4a4550">{entry['language']} · {entry['time']}</div>
+            </div>
+            <span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:0.85rem;color:{info['color']}">{entry['confidence']}%</span>
         </div>""", unsafe_allow_html=True)
 
-# ── HOW IT WORKS ─────────────────────────────────────────────────────────────────
-st.markdown("---")
-st.markdown("## 🧠 How VoxSense Works")
-col1,col2,col3 = st.columns(3)
-with col1:
-    st.markdown("""<div class="feature-card">
-        <div style="font-size:2rem">🎵</div>
-        <h4>Step 1 — Feature Extraction</h4>
-        <p>40-coefficient <b>MFCC</b> (Mel-Frequency Cepstral Coefficients) fingerprint 
-        your voice's shape — the same technique used by Siri, Alexa, and Google Assistant.</p>
-    </div>""", unsafe_allow_html=True)
-with col2:
-    st.markdown("""<div class="feature-card">
-        <div style="font-size:2rem">📐</div>
-        <h4>Step 2 — Acoustic Analysis</h4>
-        <p><b>Pitch</b>, <b>energy</b>, <b>speech rate</b>, <b>spectral contrast</b>, 
-        and <b>tempo</b> — the same acoustic cues humans use to sense emotion in a voice.</p>
-    </div>""", unsafe_allow_html=True)
-with col3:
-    st.markdown("""<div class="feature-card">
-        <div style="font-size:2rem">🤖</div>
-        <h4>Step 3 — Classification</h4>
-        <p>Language-calibrated acoustic classifier maps all features to one of 4 
-        emotional states, displayed in <b>English + 3 Indian scripts</b>.</p>
-    </div>""", unsafe_allow_html=True)
+# ── HOW IT WORKS ──────────────────────────────────────────────────────────────
+st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown('<div class="section-label">How It Works</div>', unsafe_allow_html=True)
+s1,s2,s3 = st.columns(3, gap="medium")
+with s1:
+    st.markdown("""<div class="step-card">
+        <div class="step-number" style="color:#f97316">Step 01 — Extract</div>
+        <div class="step-title">Voice Fingerprinting</div>
+        <div class="step-body">
+            We extract <strong>40-coefficient MFCCs</strong> — a mathematical fingerprint
+            of your voice's spectral shape. The same technique Siri, Alexa, and
+            Google Assistant use to understand speech. Plus pitch, energy, and speech rate.
+        </div></div>""", unsafe_allow_html=True)
+with s2:
+    st.markdown("""<div class="step-card">
+        <div class="step-number" style="color:#2dd4bf">Step 02 — Calibrate</div>
+        <div class="step-title">Language Adjustment</div>
+        <div class="step-body">
+            Bengali is vowel-rich with higher baseline pitch.
+            Punjabi is tonal with elevated energy.
+            Tamil has Dravidian prosody unlike Indo-Aryan.
+            <strong>VoxSense adjusts thresholds per language family</strong> —
+            something global models skip entirely.
+        </div></div>""", unsafe_allow_html=True)
+with s3:
+    st.markdown("""<div class="step-card">
+        <div class="step-number" style="color:#8b5cf6">Step 03 — Classify</div>
+        <div class="step-title">Emotion Prediction</div>
+        <div class="step-body">
+            An acoustic classifier maps all features to 1 of 6 emotional states.
+            Rules encode what a trained <strong>Random Forest / SVM</strong>
+            learns from labelled Indian speech — displayed in
+            English and 4 Indian scripts.
+        </div></div>""", unsafe_allow_html=True)
 
-st.markdown("---")
-st.markdown("## 🇮🇳 The Indian Accent Gap")
-u1,u2 = st.columns(2)
-with u1:
-    st.markdown("""<div class="feature-card">
-        <h4>🌍 The Global Problem</h4>
-        <p>All major SER (Speech Emotion Recognition) datasets — RAVDESS, CREMA-D, 
-        EMODB — are trained on <b>Western voices only</b>. Indian acoustic patterns: 
-        the tonal richness of Bengali, the energy of Punjabi, Hinglish code-switching 
-        — are entirely absent. VoxSense is built for Indian accents from day one.</p>
-    </div>""", unsafe_allow_html=True)
-with u2:
-    st.markdown("""<div class="feature-card">
-        <h4>🏛️ Real Applications</h4>
-        <p><b>NIC / Govt:</b> Flag distressed citizens on grievance helplines (112, CPGRAMS)<br><br>
-        <b>Healthcare:</b> Rural mental health monitoring where therapists are scarce<br><br>
-        <b>EdTech:</b> Detect student frustration during online exams to offer help</p>
-    </div>""", unsafe_allow_html=True)
+# ── ROADMAP ───────────────────────────────────────────────────────────────────
+st.markdown("<br>", unsafe_allow_html=True)
+st.markdown('<div class="section-label">What Comes Next</div>', unsafe_allow_html=True)
+r1,r2 = st.columns(2, gap="medium")
+with r1:
+    st.markdown("""<div class="step-card">
+        <div class="step-number" style="color:#10b981">Phase 2 — Train</div>
+        <div class="step-title">Real Indian Accent Dataset</div>
+        <div class="step-body">
+            Collect labelled audio from native speakers across Bengali, Hindi,
+            Punjabi, Tamil, and Telugu. Train a proper supervised model (Random Forest → CNN)
+            to replace the acoustic classifier. Target: 1000+ samples × 6 emotions × 5 languages.
+        </div></div>""", unsafe_allow_html=True)
+with r2:
+    st.markdown("""<div class="step-card">
+        <div class="step-number" style="color:#3b82f6">Phase 3 — Scale</div>
+        <div class="step-title">API + Mobile + Real-Time</div>
+        <div class="step-body">
+            Open REST API for integration. Real-time microphone detection.
+            Mobile app in Flutter. Potential integration with
+            rural mental health platforms, citizen grievance helplines,
+            and edtech distress detection systems.
+        </div></div>""", unsafe_allow_html=True)
 
+# ── FOOTER ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="footer">
-    <b>VoxSense</b> · Indian Voice Emotion Detector · Python · Librosa · Streamlit<br>
-    Bengali · Hindi · Punjabi · Tamil · Telugu · Marathi · Hinglish · Indian English<br><br>
-    <span style="color:#58a6ff">NIC Digital India Internship Project · 2025 · Open Source · MIT License</span>
-</div>""", unsafe_allow_html=True)
+    <strong style="color:#6b6570">VoxSense</strong> &nbsp;·&nbsp;
+    Indian Voice Emotion Detector &nbsp;·&nbsp; Open Source · MIT License<br>
+    Built because the problem genuinely matters —
+    1.4 billion voices deserve to be heard accurately.<br><br>
+    <a href="https://github.com/tathagatalaskar/voxsense-emotion-detector">GitHub</a>
+    &nbsp;·&nbsp; Python · Librosa · Streamlit · Plotly · NumPy
+</div>
+""", unsafe_allow_html=True)

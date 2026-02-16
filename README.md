@@ -7,7 +7,7 @@
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Try%20VoxSense-f97316?style=for-the-badge&logo=streamlit&logoColor=white)](https://voxsense-emotion-detector.streamlit.app)
 [![GitHub](https://img.shields.io/badge/GitHub-tathagatalaskar-181717?style=for-the-badge&logo=github)](https://github.com/tathagatalaskar/voxsense-emotion-detector)
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-2dd4bf?style=for-the-badge)](LICENSE)
 
 ---
 
@@ -189,7 +189,8 @@ where lakhs of students are learning entirely online.
 **Tathagata Laskar**
 B.Tech, Computer Science Engineering
 Chandigarh University
-LinkedIn: https://www.linkedin.com/in/tathagata-laskar-b2048a276/
+
+LinkedIn:https://www.linkedin.com/in/tathagata-laskar-b2048a276/
 
 My mother tongue is Bengali — which is part of why this project exists.
 I noticed that voice-based tools consistently performed worse
